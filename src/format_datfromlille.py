@@ -5,7 +5,7 @@ import numpy as np
 
 
 NAME_FOLDER = '/Users/nathanquiblier/Downloads/new analyse rpb1 Dmax 2µm2s OK nov 2020'
-NAME_F = '../data/SPT:RPB1_ABC4M_format.txt'
+NAME_F = '../dat/SPT:RPB1_ABC4M_format.txt'
 
 dirlist = os.listdir(NAME_FOLDER)
 
@@ -21,8 +21,11 @@ for file in dirlist:
 
 points = pd.concat(datas,axis=0,ignore_index=True)
 points['traj'] = points['traj']*100+points['dataset']
-points['Dtrue'] = np.zeros(points.shape[0])
+points['traj'] = points['traj'].astype(int)
+points['f'] = points['f'].astype(int)
+#points['Dtrue'] = np.zeros(points.shape[0])
 #print(points)
+points.drop(columns=['dataset'],inplace=True)
 
 
 points.to_csv(NAME_F,index=False)
