@@ -1,0 +1,32 @@
+
+
+
+data:
+  - columns : ['traj','D','alpha','method','dynamic','noise','lightsheet','alphapred','Dpred','sigma2pred','size_traj']
+  - delta_t : 0.01 # acquisition period in second (10 ms)
+  - pxsize : 0.065 # pixel size in micrometer (65 nm)
+  - sigma_noise : None #localization noise (verif  var ou std)
+  - d : 2 #dimension of diffusion
+
+
+
+
+
+
+
+tamsd:
+  - len_tamsd : 7 #number of points of tamsd calculated
+  - nmin : 10 # minimal number of points per trajectory
+
+mapD:
+  - npnts_per_cluster : 100 #expected  points per cluster
+  - nmin : 3 # minimal number of points per trajectory
+  - mask:
+    - is : 0 # 0 if all datas are kept 1 if we reject data
+    - type : #ellipse or rectangle
+    - x_center : #coordinate x of the center of mask in pix
+    - y_center : #coordinate y of the center of mask in pix
+    - x_axis : #len in x of mask in pix
+    - y_axis : #len in y of mask in pix
+    - alpha : -1.032 # rotation angle from the horizontal of the mask in rad
+

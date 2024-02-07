@@ -98,6 +98,7 @@ def tamsd2D(currta_msd,alpha,d,delta_t):
 
 
 def apply_fit(currta_msd, method,d,delta_t,len_msd,sigma2=None):
+    #  enum
     alpha = -1
     D = -1
     if method == 0: #estim D60 and estimate loc noise => estim alpha
