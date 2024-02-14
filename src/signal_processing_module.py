@@ -118,3 +118,38 @@ def apply_fit(currta_msd, method,d,delta_t,len_msd,sigma2=None):
         D = tamsd2D(currta_msd,1,d,delta_t)
         sigma2 = -1
     return alpha,D,sigma2
+
+def returntrajframe2zero(points,traj):
+    """Put the first frame of a trajectory as frame 0
+
+    Args:
+        points (DataFrame): the dataframe containing all the trajectories
+        traj (int): the trajectory to normlalize
+
+    Returns:
+        DataFrame : the modified trajectory
+    """
+    f0=points[points.traj==traj].f.min()
+    if f0>0:
+        new_frames=points[points.traj==traj].f-f0
+        points.loc[(points.traj==traj),'f']=new_frames.values
+    return points[points.traj==traj]
+
+def return_jumps(in_traj):
+    """ Analyse if a trajectory as jumps and count that jumps
+
+    Args:
+        in_traj (DataFrame): An spst trajectory from a dataframe
+
+    Returns:
+        int : 0 if jumps are greater tstrictly than 1 frame, 1 if else
+        int : number of 1 frame jumps
+    """
+    x = np.ones(int(in_traj.f.max())+1)
+    x[in_traj.f] = 0
+    y = (x[:-1]-x[1:])
+    if np.abs(y[y!=0]).sum()==2*x.sum():
+        jumpsinf1=1
+    else:
+        jumpsinf1=0
+    return jumpsinf1,x.sum()

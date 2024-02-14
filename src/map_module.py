@@ -118,6 +118,25 @@ def compute_D_by_cl(points, sigma_noise):
         # Jumps_by_clust=currpoints.shape[0]
     return points
 
+def call_map_D(points,min_number_per_traj,npoints_per_clus,sigma_noise):
+    trajnums = np.unique(points.traj)
+    print("Nombre traj =",trajnums.size)
+    print('computing the Voronoi meshes')
+    #============= Compute square displacements =================#
+    print("Compute square displacements")
+    points = drop_traj_short_in_df(points,min_number_per_traj)
+    points = compute_difft_diffr2_in_df(points)
+    #update the # of trajectories & # of points
+    trajnums = np.unique(points.traj)
+    #============= Voronoi meshing of the positions =================#
+    print("Voronoi meshing of the positions")
+    points, vor = create_Voronoi(points,npoints_per_clus)
+    print('Infering the diffusion coeficient of each cluster')
+    #============= compute the maximum likelyhood in each cluster =================#
+    points = compute_D_by_cl(points,sigma_noise)
+    return vor
+
+
 #parameters
 
 PX_SIZE=0.065# pixel size in micrometer (65 nm)

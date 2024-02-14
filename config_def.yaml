@@ -1,24 +1,22 @@
 
-
-
 data:
-  - columns : ['traj','D','alpha','method','dynamic','noise','lightsheet','alphapred','Dpred','sigma2pred','size_traj']
+  - columns : ['x','y','traj','f'] # minimum is ['x','y','traj','f'], it's the header of your data
+  - path_data : None # path of the csv containing the data (without header)
   - delta_t : 0.01 # acquisition period in second (10 ms)
   - pxsize : 0.065 # pixel size in micrometer (65 nm)
-  - sigma_noise : None #localization noise (verif  var ou std)
+  - sigma_noise : None #localization noise (verif  var ou std)=> std a priori
   - d : 2 #dimension of diffusion
 
 
-
-
-
-
-
 tamsd:
+  - do : 0 #0 or 1 if we do the method
   - len_tamsd : 7 #number of points of tamsd calculated
   - nmin : 10 # minimal number of points per trajectory
+  - methods: [] #list of fittings methods
+  - plot : [] #list of 0 or 1 to plot or not the fitting
 
 mapD:
+  - do : 0 #0 or 1 if we do the method
   - npnts_per_cluster : 100 #expected  points per cluster
   - nmin : 3 # minimal number of points per trajectory
   - mask:
@@ -29,4 +27,4 @@ mapD:
     - x_axis : #len in x of mask in pix
     - y_axis : #len in y of mask in pix
     - alpha : -1.032 # rotation angle from the horizontal of the mask in rad
-
+  - plot : #0 or 1
