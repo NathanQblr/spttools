@@ -59,13 +59,13 @@ def drop_traj_short_in_df(points, min_len):
             mask[currtraj.index] = False
     return points[mask].reset_index(drop=True)
 
-def compute_difft_diffr2_by_traj(currtraj):
+def compute_difft_diffr2_by_traj(currtraj,delta_t):
     '''compute the time differences and the squared distances in a trajectory currtraj'''
-    difft=np.diff(currtraj.f)*DELTA_T
+    difft=np.diff(currtraj.f)*delta_t
     diffr2=np.square(np.diff(currtraj.x))+np.square(np.diff(currtraj.y))
     return difft, diffr2
 
-def compute_difft_diffr2_in_df(points):
+def compute_difft_diffr2_in_df(points,delta_t):
     '''compute the time differences and the squared distances in a DataFrame points'''
     trajnums = np.unique(points.traj)
     for traj in trajnums:
@@ -73,7 +73,7 @@ def compute_difft_diffr2_in_df(points):
         # delete the last data point in the trajectory cause it has no successor
         points = points.drop([points[points.traj == traj].index[-1]]).reset_index(drop=True)
         # inject in the correct columns
-        difft, diffr2 = compute_difft_diffr2_by_traj(currtraj)
+        difft, diffr2 = compute_difft_diffr2_by_traj(currtraj,delta_t)
         points.loc[points[points.traj == traj].index, 'dt'] = difft
         points.loc[points[points.traj == traj].index, 'dr2'] = diffr2
     return points
@@ -118,14 +118,14 @@ def compute_D_by_cl(points, sigma_noise):
         # Jumps_by_clust=currpoints.shape[0]
     return points
 
-def call_map_D(points,min_number_per_traj,npoints_per_clus,sigma_noise):
+def call_map_D(points,min_number_per_traj,npoints_per_clus,sigma_noise,delta_t):
     trajnums = np.unique(points.traj)
     print("Nombre traj =",trajnums.size)
     print('computing the Voronoi meshes')
     #============= Compute square displacements =================#
     print("Compute square displacements")
     points = drop_traj_short_in_df(points,min_number_per_traj)
-    points = compute_difft_diffr2_in_df(points)
+    points = compute_difft_diffr2_in_df(points,delta_t)
     #update the # of trajectories & # of points
     trajnums = np.unique(points.traj)
     #============= Voronoi meshing of the positions =================#
@@ -136,117 +136,8 @@ def call_map_D(points,min_number_per_traj,npoints_per_clus,sigma_noise):
     points = compute_D_by_cl(points,sigma_noise)
     return vor
 
-
-#parameters
-
-PX_SIZE=0.065# pixel size in micrometer (65 nm)
-DELTA_T=0.01# acquisition period in second (10 ms)
-NPNTS_PER_CLUST=100#expected # of points per cluster
-NMIN=3# minimal number of points per trajectory
-SIGMA_NOISE=0.06# localization noise
-
-
-#boundary of the nucleus in micrometers
-#= an ellipse centered on (X_CENTER,Y_CENTER)
-# with axis lenght = X_AXIS and Y_AXIS
-# and tilted by ALPHA radians from the horizontal
-X_CENTER=207.4*PX_SIZE
-Y_CENTER=213.1*PX_SIZE
-X_AXIS=220*PX_SIZE#336.8/2.*PX_SIZE
-Y_AXIS=140*PX_SIZE#254.3/2.*PX_SIZE
-ALPHA=-1.032
-
-
-#plot and cmputation options
-PLOT_FIG=True#if true, produces all the plots
-#if false use the data saved in file COMPUTED_D_FNAME below
-COMPUTED_D_FNAME='clustered_points_wD.csv'
-
-#initialisations
-
-NPNTS_TOT=0# # of points in total in the experiment
-FOUR_SIGMA2=4*np.power(SIGMA_NOISE,2.0)
-
-#read the raw data
-NAME_F='../dat/SPT:RPB1_ABC4M_format.txt'#'../dat/SPT:MB_0_format.txt'#'../data/0002.rpt_tracked.txt'
-COL_NAMES=['x', 'y', 'f','traj', 'dr2', 'cl', 'D', 'dt']#['x', 'y', 'traj','f', 'dr2','cl','D','dt']
-points = pd.read_csv(NAME_F, header=0)#.iloc[:100000,:]
-
-#points['traj'] = points['traj'].astype(int)
-#points['f'] = points['f'].astype(int)
-
-#points.x= positions x, 0
-#points.y= positions y, 1
-#points.f= frame of point i (ie time, in multiple of dt), 2
-#points.traj= trajectory label of point i, 3
-#points.dr2= squared norm between positions i+1 and i, 4
-#points.cl= cluster label of point i, 5
-#points.D= diff coefficience of point i, 6
-#points.dt= time difference between positions i+1 and i, 7
-#points.tamsd=tamsd of point i, 8
-
-
-#points=points.iloc[:,0:8]
-# total number of points
-Npointstotal=points.shape[0]
-Ntrajtotal=np.max(points.traj)
-#initializations
-#points.dr2=np.zeros(Npointstotal)
-#points.cl=np.zeros(Npointstotal)
-#points.D=np.zeros(Npointstotal)
-#points.dt=np.zeros(Npointstotal)
-#points['tamsd']=np.zeros(Npointstotal)
-#change time into time difference
-trajnums=np.unique(points.traj)
-#convert position in micometers
-
-#points.x*=PX_SIZE
-#points.y*=PX_SIZE
-
-
-
-#============= get rid of trajectories that are not inside the nucleus =================#
-print("Get rid of trajectories that are not inside the nucleus")
-points = drop_traj_outside_ellipse_in_df(points,X_CENTER,Y_CENTER,X_AXIS,Y_AXIS,ALPHA)
-
-trajnums=np.unique(points.traj)
-print("Nombre traj ",trajnums.size)
-NPNTS_TOT=points.shape[0]
-
-
-
-print('computing the Voronoi meshes')
-
-#============= Compute square displacements =================#
-print("Compute square displacements")
-points = drop_traj_short_in_df(points,NMIN)
-
-points = compute_difft_diffr2_in_df(points)
-
-#update the # of trajectories & # of points
-trajnums=np.unique(points.traj)
-
-
-
-
-#============= Voronoi meshing of the positions =================#
-
-print("Voronoi meshing of the positions")
-points, vor = create_Voronoi(points,NPNTS_PER_CLUST)
-
-print('Infering the diffusion coeficient of each cluster')
-#============= compute the maximum likelyhood in each cluster =================#
-points = compute_D_by_cl(points,SIGMA_NOISE)
-
-#finally, save the results in the file COMPUTED_D_FNAME
-#points.to_csv(COMPUTED_D_FNAME)
-
-
-
-
-if PLOT_FIG:
+def plot_mapD(points,voronoi,display):
     fig,ax=plt.subplots(3,1)
-
     # 1. plots the trajectory points colorcoded by their cluster id
     # and their voronoi clustering
     ax[0].set_aspect(1)
@@ -254,7 +145,7 @@ if PLOT_FIG:
     ax[0].set_ylim(0.6,27.9)
     ax[0].set_xticks(np.arange(5,30,5))
     ax[0].set_yticks(np.arange(5,30,5))
-    voronoi_plot_2d(vor, ax[0],show_vertices=False, line_colors='orange',line_width=1, line_alpha=0.6, point_size=0)
+    voronoi_plot_2d(voronoi, ax[0],show_vertices=False, line_colors='orange',line_width=1, line_alpha=0.6, point_size=0)
     #plot indiviudal positions on top the mesh
     ax[0].scatter(points.x,points.y, c=points.cl,s=0.3)
     #ax = plt.gca()
@@ -295,6 +186,48 @@ if PLOT_FIG:
     ax[2].set_title(f'est. D = {np.mean(unique_Ds):3.3}+/-{np.std(unique_Ds):3.3}')
     ax[2].set_ylabel('# of clusters')
 
-if PLOT_FIG:
-    fig.tight_layout(pad=0.1, w_pad=0.1, h_pad=0.1)
-    plt.show()
+    if display:
+        fig.tight_layout(pad=0.1, w_pad=0.1, h_pad=0.1)
+        plt.show()
+    return fig
+
+#parameters
+"""
+PX_SIZE=0.065# pixel size in micrometer (65 nm)
+DELTA_T=0.01# acquisition period in second (10 ms)
+NPNTS_PER_CLUST=100#expected # of points per cluster
+NMIN=3# minimal number of points per trajectory
+SIGMA_NOISE=0.06# localization noise
+
+
+#boundary of the nucleus in micrometers
+#= an ellipse centered on (X_CENTER,Y_CENTER)
+# with axis lenght = X_AXIS and Y_AXIS
+# and tilted by ALPHA radians from the horizontal
+X_CENTER=207.4*PX_SIZE
+Y_CENTER=213.1*PX_SIZE
+X_AXIS=220*PX_SIZE#336.8/2.*PX_SIZE
+Y_AXIS=140*PX_SIZE#254.3/2.*PX_SIZE
+ALPHA=-1.032
+
+
+#plot and cmputation options
+PLOT_FIG=True#if true, produces all the plots
+#if false use the data saved in file COMPUTED_D_FNAME below
+COMPUTED_D_FNAME='clustered_points_wD.csv'
+
+#initialisations
+
+NPNTS_TOT=0# # of points in total in the experiment
+FOUR_SIGMA2=4*np.power(SIGMA_NOISE,2.0)
+
+#read the raw data
+NAME_F='../dat/SPT:RPB1_ABC4M_format.txt'#'../dat/SPT:MB_0_format.txt'#'../data/0002.rpt_tracked.txt'
+COL_NAMES=['x', 'y', 'f','traj', 'dr2', 'cl', 'D', 'dt']#['x', 'y', 'traj','f', 'dr2','cl','D','dt']
+points = pd.read_csv(NAME_F, header=0)#.iloc[:100000,:]
+points.x *= PX_SIZE
+points.y *= PX_SIZE
+
+
+vor = call_map_D(points,NMIN,NPNTS_PER_CLUST,SIGMA_NOISE)
+figure = plot_mapD(points,vor,True)"""

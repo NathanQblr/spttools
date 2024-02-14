@@ -1,30 +1,33 @@
 
 data:
-  - columns : ['x','y','traj','f'] # minimum is ['x','y','traj','f'], it's the header of your data
-  - path_data : None # path of the csv containing the data (without header)
-  - delta_t : 0.01 # acquisition period in second (10 ms)
-  - pxsize : 0.065 # pixel size in micrometer (65 nm)
-  - sigma_noise : None #localization noise (verif  var ou std)=> std a priori
-  - d : 2 #dimension of diffusion
+  columns : 0 #['x','y','traj','f'] # minimum is ['x','y','traj','f'], it's the header of your data if None the header is in your data
+  path_data : 'dat/SPT:RPB1_ABC4M_format.txt' # path of the csv containing the data (without header)
+  path_res_folder :
+  delta_t : 0.01 # acquisition period in second (10 ms)
+  pxsize : 0.065 # pixel size in micrometer (65 nm)
+  sigma_noise : 0 #localization noise (verif  var ou std)=> std a priori
+  d : 2 #dimension of diffusion
 
 
 tamsd:
-  - do : 0 #0 or 1 if we do the method
-  - len_tamsd : 7 #number of points of tamsd calculated
-  - nmin : 10 # minimal number of points per trajectory
-  - methods: [] #list of fittings methods
-  - plot : [] #list of 0 or 1 to plot or not the fitting
+  do : 0 #0 or 1 if we do the method
+  len_tamsd : 7 #number of points of tamsd calculated
+  nmin : 10 # minimal number of points per trajectory
+  methods: [2] #list of fittings methods
+  plot : [2] #list of 0 or 1 to plot or not the fitting
 
 mapD:
-  - do : 0 #0 or 1 if we do the method
-  - npnts_per_cluster : 100 #expected  points per cluster
-  - nmin : 3 # minimal number of points per trajectory
-  - mask:
-    - is : 0 # 0 if all datas are kept 1 if we reject data
-    - type : #ellipse or rectangle
-    - x_center : #coordinate x of the center of mask in pix
-    - y_center : #coordinate y of the center of mask in pix
-    - x_axis : #len in x of mask in pix
-    - y_axis : #len in y of mask in pix
-    - alpha : -1.032 # rotation angle from the horizontal of the mask in rad
-  - plot : #0 or 1
+  do : 1 #0 or 1 if we do the method
+  npnts_per_cluster : 100 #expected  points per cluster
+  nmin : 3 # minimal number of points per trajectory
+  mask:
+    is : 1 # 0 if all datas are kept 1 if we reject data
+    type : ellipse #ellipse or rectangle
+    x_center : 207.4 #coordinate x of the center of mask in pix
+    y_center : 213.1 #coordinate y of the center of mask in pix
+    x_axis : 220 #len in x of mask in pix
+    y_axis : 140 #len in y of mask in pix
+    alpha : -1.032 # rotation angle from the horizontal of the mask in rad
+  plot : 1 #0 or 1 if we generate the figure
+  display : 1 #0 or 1 if we display the figure
+

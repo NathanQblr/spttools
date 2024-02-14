@@ -2,17 +2,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 
-def ta_msd_m(initx,inity,f,len_msd):
+def ta_msd_m(currtraj,len_msd):
     """ the function that computes the time averaged MSD of a trajectory traj
     in_delta_t is the time between two consecutive frames """
     #attention aux traj avec des frames manquantes
     #in_traj.loc[:,'f'] = in_traj.f.view()-in_traj.f.min()
     msd_array = np.zeros(len_msd+1)#int(in_traj.f.max())+1)
-    x = np.ones(int(f.max())+1)*np.inf
-    y = np.ones(int(f.max())+1)*np.inf
+    x = np.ones(int(currtraj.f.max())+1)*np.inf
+    y = np.ones(int(currtraj.f.max())+1)*np.inf
 
-    x[f] = initx
-    y[f] = inity
+    x[currtraj.f] = currtraj.x
+    y[currtraj.f] = currtraj.y
 
     for tau in range(len_msd):#int(in_traj.f.max())):
         dx = x[tau+1:]-x[:-tau-1]
@@ -97,10 +97,13 @@ def tamsd2D(currta_msd,alpha,d,delta_t):
     return Dpred
 
 
-def apply_fit(currta_msd, method,d,delta_t,len_msd,sigma2=None):
+def apply_fit(currta_msd, method,d,delta_t,len_msd,sigma=None):
+
     #  enum
     alpha = -1
     D = -1
+    if sigma != None:
+        sigma2 = sigma**2
     if method == 0: #estim D60 and estimate loc noise => estim alpha
         D ,sigma2 = tamsd2Dandnoise(currta_msd,d,delta_t)
         alpha = tamsd2alpha(currta_msd,len_msd,sigma2,d,delta_t)
