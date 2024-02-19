@@ -12,20 +12,21 @@ dirlist = os.listdir(NAME_FOLDER)
 
 COL_NAMES=['x', 'y', 'f','traj', 'dr2', 'cl', 'D', 'dt']
 datas = []
-dataset_n = 1
+maxi = 0
 for file in dirlist:
     if file[-4:]=='.txt':
-      datas.append(pd.read_csv(NAME_FOLDER+'/'+file,sep='\t',header = None,names=COL_NAMES))
-      datas[-1]['dataset'] = dataset_n*np.ones_like(datas[-1].x)
-      dataset_n+=1
+      points = pd.read_csv(NAME_FOLDER+'/'+file,sep='\t',header = None,names=COL_NAMES)
+      if np.unique(points.traj).size>400:
+        #print("oh")
+        #maxi = np.unique(points.traj).size
+        break
+#print("Maxi : ", maxi)
 
-points = pd.concat(datas,axis=0,ignore_index=True)
-points['traj'] = points['traj']*100+points['dataset']
+points['traj'] = points['traj']
 points['traj'] = points['traj'].astype(int)
 points['f'] = points['f'].astype(int)
 #points['Dtrue'] = np.zeros(points.shape[0])
 #print(points)
-points.drop(columns=['dataset'],inplace=True)
 
 
 points.to_csv(NAME_F,index=False)

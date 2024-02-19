@@ -5,7 +5,7 @@ data:
   path_res_folder :
   delta_t : 0.01 # acquisition period in second (10 ms)
   pxsize : 0.065 # pixel size in micrometer (65 nm)
-  sigma_noise : 0 #localization noise (verif  var ou std)=> std a priori
+  sigma_noise : 0.06 #localization noise (verif  var ou std)=> std a priori
   d : 2 #dimension of diffusion
 
 
@@ -14,20 +14,16 @@ tamsd:
   len_tamsd : 7 #number of points of tamsd calculated
   nmin : 10 # minimal number of points per trajectory
   methods: [2] #list of fittings methods
-  plot : [2] #list of 0 or 1 to plot or not the fitting
+  plot : [0] #list of 0 or 1 to plot or not the fitting
 
 mapD:
   do : 1 #0 or 1 if we do the method
   npnts_per_cluster : 100 #expected  points per cluster
+  ntraj : 5 #minimal number of traj for analysis
   nmin : 3 # minimal number of points per trajectory
   mask:
     is : 1 # 0 if all datas are kept 1 if we reject data
     type : ellipse #ellipse or rectangle
-    x_center : 207.4 #coordinate x of the center of mask in pix
-    y_center : 213.1 #coordinate y of the center of mask in pix
-    x_axis : 220 #len in x of mask in pix
-    y_axis : 140 #len in y of mask in pix
-    alpha : -1.032 # rotation angle from the horizontal of the mask in rad
   plot : 1 #0 or 1 if we generate the figure
   display : 1 #0 or 1 if we display the figure
 
