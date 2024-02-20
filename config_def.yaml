@@ -1,16 +1,21 @@
 
 data:
   columns : 0 #['x','y','traj','f'] # minimum is ['x','y','traj','f'], it's the header of your data if None the header is in your data
-  path_data : 'dat/SPT:RPB1_ABC4M_format.txt' # path of the csv containing the data (without header)
+  path_data : 'dat/SPT:RPB1_ABC4M_format3.txt' # path of the csv containing the data (without header)
   path_res_folder :
   delta_t : 0.01 # acquisition period in second (10 ms)
   pxsize : 0.065 # pixel size in micrometer (65 nm)
   sigma_noise : 0.06 #localization noise (verif  var ou std)=> std a priori
   d : 2 #dimension of diffusion
 
+mask:
+    is : 1 # 0 if all datas are kept 1 if we reject data
+    type : ellipse #ellipse or rectangle
+    ntraj : 5 #minimal number of traj for analysis
+
 
 tamsd:
-  do : 0 #0 or 1 if we do the method
+  do : 1 #0 or 1 if we do the method
   len_tamsd : 7 #number of points of tamsd calculated
   nmin : 10 # minimal number of points per trajectory
   methods: [2] #list of fittings methods
@@ -19,11 +24,7 @@ tamsd:
 mapD:
   do : 1 #0 or 1 if we do the method
   npnts_per_cluster : 100 #expected  points per cluster
-  ntraj : 5 #minimal number of traj for analysis
   nmin : 3 # minimal number of points per trajectory
-  mask:
-    is : 1 # 0 if all datas are kept 1 if we reject data
-    type : ellipse #ellipse or rectangle
   plot : 1 #0 or 1 if we generate the figure
   display : 1 #0 or 1 if we display the figure
 

@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from matplotlib.image import NonUniformImage
 import matplotlib.widgets as mwidgets
 from matplotlib.patches import Ellipse, Rectangle
+import seaborn as sns
 
 import src.signal_processing_module as sp
 import src.map_module as mm
@@ -45,9 +46,9 @@ class Runner():
     min_len_traj = config['nmin']
     len_tamsd = config['len_tamsd']
     methods = config['methods']
-    trajnums = np.unique(self.data.traj)
+    trajnums = np.unique(self.points.traj)
     for traj in trajnums:
-      currtraj = sp.returntrajframe2zero(self.data,traj)
+      currtraj = sp.returntrajframe2zero(self.points,traj)
       length = currtraj.f.max()
       jumpsinfeq1,jumpsnbr = sp.return_jumps(currtraj)
       if (length>min_len_traj)&(jumpsinfeq1==1):
@@ -64,14 +65,14 @@ class Runner():
     config =  self.config['mapD']
     npoints_per_clus = config['npnts_per_cluster']
     min_number_per_traj = config['nmin']
-    if config['mask']['is']==1:
+    if self.config['mask']['is']==1:
       points = pd.DataFrame()
-      while points.size<config['ntraj']:
+      while points.size<self.config['mask']['ntraj']:
         self.select_mask_on_data()
-        if config['mask']['type']=='ellipse':
+        if self.config['mask']['type']=='ellipse':
           print("Get rid of trajectories that are not inside the ellipse")
           form = mm.inside_ellipse
-        if config['mask']['type']=='rectangle':
+        if self.config['mask']['type']=='rectangle':
           print("Get rid of trajectories that are not inside the rectangle")
           form = mm.inside_rectangle
         points = mm.drop_traj_outside_form_in_df(self.data,self.x_center,self.y_center,self.x_axis,self.y_axis,self.alpha,form)
@@ -133,7 +134,6 @@ class Runner():
     plt.show()
 
   def select_mask_on_data(self):
-    self.load_data()
     H, xedges, yedges = np.histogram2d(self.data.x.to_numpy(), self.data.y.to_numpy(),bins=100)
     fig = plt.figure(figsize=(5, 5))
     ax = fig.add_subplot(title='Data smoothed')
@@ -143,9 +143,9 @@ class Runner():
         print(eclick.xdata, eclick.ydata)
         print(erelease.xdata, erelease.ydata)
     props = dict(facecolor='blue', alpha=0.5)
-    if self.config['mapD']['mask']['type'] == 'ellipse':
+    if self.config['mask']['type'] == 'ellipse':
       shape = mwidgets.EllipseSelector(ax, onselect, interactive=True,props=props)
-    if self.config['mapD']['mask']['type'] == 'rectangle':
+    if self.config['mask']['type'] == 'rectangle':
       shape = mwidgets.RectangleSelector(ax, onselect, interactive=True,props=props)
     shape.add_state('rotate')
     plt.show()
@@ -157,11 +157,27 @@ class Runner():
     self.alpha = shape.rotation
 
 
-
+  def apply_mask_on_data(self):
+    if self.config['mask']['is']==1:
+      self.points = pd.DataFrame()
+      while self.points.size<self.config['mask']['ntraj']:
+        self.select_mask_on_data()
+        if self.config['mask']['type']=='ellipse':
+          print("Get rid of trajectories that are not inside the ellipse")
+          form = mm.inside_ellipse
+        if self.config['mask']['type']=='rectangle':
+          print("Get rid of trajectories that are not inside the rectangle")
+          form = mm.inside_rectangle
+        self.points = mm.drop_traj_outside_form_in_df(self.data,self.x_center,self.y_center,self.x_axis,self.y_axis,self.alpha,form)
+        print("Nuber of trajectories : ",np.unique(self.points.traj).size)
+    else:
+      self.points = self.data[['x', 'y','traj','f']]
+    self.points = self.points.assign(dr2=0,cl=0,D=0,dt=0) #squared norm between positions, cluster label of point,diff coefficience of point,time difference between positions
 
 
   def run(self):
     self.load_data()
+    self.apply_mask_on_data()
 
     if self.config['tamsd']['do']:
       self.results_tamsd = self.run_tamsd()
@@ -175,3 +191,5 @@ class Runner():
 A = Runner('config_def.yaml')
 #A.plot_data()
 A.run()
+fig  = sns.relplot( data= A.results_tamsd,
+                   x = )
