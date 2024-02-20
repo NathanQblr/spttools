@@ -37,7 +37,7 @@ def tamsd2Dandnoise(currta_msd,d,delta_t):
     XX = np.vstack([x_reg, np.ones_like(x_reg)]).T
     # force the lienar fit zo zero intercept
     slope=np.linalg.lstsq(XX,y_reg,rcond=None)[0]
-    # TA_MSD(t)=2*d*D*t so slope = 2*d*D + 2*d*loc_noise_squarred
+    # TA_MSD(t)=2*d*D*t + 2*d*loc_noise_squarred so slope = 2*d*D
     Dpred = slope[0]/(2*d)
     loc_noise_squarred = slope[1]/(d*2)
 
@@ -109,7 +109,7 @@ def apply_fit(currta_msd, method,d,delta_t,len_msd,sigma=None):
         alpha = tamsd2alpha(currta_msd,len_msd,sigma2,d,delta_t)
 
     if method == 1: #estim D60 and take a priori loc noise => estim alpha
-        D ,sigma2 = tamsd2Dandnoise(currta_msd,d,delta_t)
+        D ,sigma2Bin = tamsd2Dandnoise(currta_msd,d,delta_t)
         alpha = tamsd2alpha(currta_msd,len_msd,sigma2,d,delta_t)
 
     if method == 2: #estim alpha without loc => estimate D60 without loc
@@ -149,6 +149,7 @@ def return_jumps(in_traj):
         int : number of 1 frame jumps
     """
     x = np.ones(int(in_traj.f.max())+1)
+    print(in_traj.f)
     x[in_traj.f] = 0
     y = (x[:-1]-x[1:])
     if np.abs(y[y!=0]).sum()==2*x.sum():

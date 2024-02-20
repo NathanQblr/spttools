@@ -39,6 +39,7 @@ class Runner():
       self.data = pd.read_csv(self.path_data, columns)#.iloc[:10000,:]
     self.data.x *= self.pix_size
     self.data.y *= self.pix_size
+    self.data = self.data.astype({"f": int, "traj": int})
 
   def run_tamsd(self):
     results = pd.DataFrame(columns = ['traj','length','alphapred','Dpred','sigma2pred','tamsd','jumps','method'])
@@ -187,9 +188,15 @@ class Runner():
         self.plot_mapD()
     #Attention à la réutilisatation de data et points ==> effacage de données
 
+  def save_results(self):
+    path = self.config['data']['path_res_folder']
+    self.results_tamsd.to_csv(path+'results_tamsd.csv')
+    self.results_mapd.to_csv(path+'results_mapd.csv')
+
+
 
 A = Runner('config_def.yaml')
 #A.plot_data()
 A.run()
-fig  = sns.relplot( data= A.results_tamsd,
-                   x = )
+A.results_tamsd.to_csv('res.csv')
+plt.show()
