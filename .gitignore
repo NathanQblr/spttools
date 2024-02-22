@@ -8,3 +8,4 @@ venvSPT
 *.stderr
 *.stdout
 *.csv
+/res

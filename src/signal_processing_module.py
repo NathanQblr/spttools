@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+import seaborn as sns
+
 
 def ta_msd_m(currtraj,len_msd):
     """ the function that computes the time averaged MSD of a trajectory traj
@@ -149,7 +151,6 @@ def return_jumps(in_traj):
         int : number of 1 frame jumps
     """
     x = np.ones(int(in_traj.f.max())+1)
-    print(in_traj.f)
     x[in_traj.f] = 0
     y = (x[:-1]-x[1:])
     if np.abs(y[y!=0]).sum()==2*x.sum():
@@ -157,3 +158,28 @@ def return_jumps(in_traj):
     else:
         jumpsinf1=0
     return jumpsinf1,x.sum()
+
+def plot_tamsd(res,display,delta_t,len_tamsd):
+    res['logDpred'] = np.log10(res['Dpred'])
+    res['sigma2'] = np.sqrt(res.sigma2pred)
+    jointfig = sns.jointplot(data=res , x='logDpred',y='alphapred',hue='method')
+
+
+    fig,ax=plt.subplots(2,1)
+    for line in res.index:
+        ax[0].loglog(np.linspace(delta_t,len_tamsd*delta_t,len_tamsd+1),res['tamsd'][line])
+    ax[0].set_ylabel(r'MSD($\tau$)')
+    ax[0].set_title('Time-av. MSD')
+    #2. plot the distribution of D60 from TA_MSD
+    d60_all = res['Dpred'].to_numpy()
+    counts, bins = np.histogram(d60_all,bins=50)
+    ax[1].stairs(counts, bins,fill=True)
+    ax[1].set_xticks(np.arange(0,55,5))
+    ax[1].grid(True,linestyle='--', linewidth=0.3)
+    ax[1].set_xlabel(r'Est. D60 from the TA_MSD $(\mu \mathrm{m}^2/\mathrm{s})$')
+    ax[1].set_ylabel('# of trajectories')
+    ax[1].set_title(f'est. D60 = {np.mean(d60_all):3.3}+/-{np.std(d60_all):3.3}')
+
+    if display:
+        plt.show()
+    return fig,jointfig
