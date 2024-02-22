@@ -18,7 +18,7 @@ tamsd:
   do : 1 #0 or 1 if we do the method
   len_tamsd : 7 #number of points of tamsd calculated
   nmin : 10 # minimal number of points per trajectory
-  methods: [1] #list of fittings methods
+  methods: [0,1,2,3] #list of fittings methods
   plot : [1] #list of 0 or 1 to plot or not the fitting
   display : 1
 

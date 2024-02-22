@@ -1,4 +1,6 @@
 import yaml
+import sys
+import subprocess
 import pandas as pd
 import numpy as np
 
@@ -22,7 +24,7 @@ class Runner():
     '''
     self.config_path = config_path
     #self._path_manager = PathManager(config_path=config_path)
-    # The Hydra configuration object, which will be set when this is run.
+
     with open(config_path, 'r') as file:
       self.config = yaml.safe_load(file)
     self.delta_t = self.config['data']['delta_t']
@@ -145,3 +147,34 @@ class Runner():
 
 A = Runner('config_def.yaml')
 A.run()
+
+"""def main(*args) :
+    '''
+    Main function to run an experiment
+    Args:
+        *args, **kwargs:
+            Positional and keyword arguments
+    Returns:
+        The value returned by calling the runner.
+    '''
+    return Runner(*args)
+
+
+def script_main() -> None:
+    '''
+    Hydra makes some assumptions about configuration paths based on how the main
+    function is called. This is a workaround for creating a script via
+    pyproject.toml. It will simply invoke main() with any passed command-line
+    arguments.
+    '''
+    cmd = (sys.executable, '-m', 'spttools.run', *sys.argv[1:])
+    try:
+        subprocess.run(cmd, check=True)
+    except subprocess.CalledProcessError as err:
+        sys.exit(err)
+    except KeyboardInterrupt:
+        pass
+
+
+if __name__ == '__main__':
+    main()"""

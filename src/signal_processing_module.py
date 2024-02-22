@@ -163,6 +163,8 @@ def plot_tamsd(res,display,delta_t,len_tamsd):
     res['logDpred'] = np.log10(res['Dpred'])
     res['sigma2'] = np.sqrt(res.sigma2pred)
     jointfig = sns.jointplot(data=res , x='logDpred',y='alphapred',hue='method')
+    jointfig.set_axis_labels(xlabel='D predicted in log scale',ylabel=r'$\alpha$ predicted')
+    jointfig.figure.suptitle(r'Distribution of $\alpha$ and D as function of the estimation method')
 
 
     fig,ax=plt.subplots(2,1)
@@ -179,6 +181,7 @@ def plot_tamsd(res,display,delta_t,len_tamsd):
     ax[1].set_xlabel(r'Est. D60 from the TA_MSD $(\mu \mathrm{m}^2/\mathrm{s})$')
     ax[1].set_ylabel('# of trajectories')
     ax[1].set_title(f'est. D60 = {np.mean(d60_all):3.3}+/-{np.std(d60_all):3.3}')
+    fig.tight_layout(pad=2.0)
 
     if display:
         plt.show()
