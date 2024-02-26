@@ -159,23 +159,25 @@ def return_jumps(in_traj):
         jumpsinf1=0
     return jumpsinf1,x.sum()
 
-def plot_tamsd(res,display,delta_t,len_tamsd):
+def plot_tamsd(res,display,delta_t,len_tamsd,methods):
     res['logDpred'] = np.log10(res['Dpred'])
     res['sigma2'] = np.sqrt(res.sigma2pred)
-    jointfig = sns.jointplot(data=res , x='logDpred',y='alphapred',hue='method')
+    lines = (res.method.isin(methods))
+    jointfig = sns.jointplot(data=res.loc[lines,:] , x='logDpred',y='alphapred',hue='method')
     jointfig.set_axis_labels(xlabel='D predicted in log scale',ylabel=r'$\alpha$ predicted')
     jointfig.figure.suptitle(r'Distribution of $\alpha$ and D as function of the estimation method')
 
 
     fig,ax=plt.subplots(2,1)
-    for line in res.index:
+    for line in res.loc[lines,:].index:
         ax[0].loglog(np.linspace(delta_t,len_tamsd*delta_t,len_tamsd+1),res['tamsd'][line])
     ax[0].set_ylabel(r'MSD($\tau$)')
     ax[0].set_title('Time-av. MSD')
     #2. plot the distribution of D60 from TA_MSD
-    d60_all = res['Dpred'].to_numpy()
-    counts, bins = np.histogram(d60_all,bins=50)
-    ax[1].stairs(counts, bins,fill=True)
+    d60_all = res.loc[lines,'Dpred'].to_numpy()
+    #counts, bins = np.histogram(d60_all,bins=50)
+    #ax[1].stairs(counts, bins,fill=True)
+    ax[1] = sns.histplot(data=res.loc[lines,:],x='Dpred',hue='method' )
     ax[1].set_xticks(np.arange(0,55,5))
     ax[1].grid(True,linestyle='--', linewidth=0.3)
     ax[1].set_xlabel(r'Est. D60 from the TA_MSD $(\mu \mathrm{m}^2/\mathrm{s})$')

@@ -77,12 +77,13 @@ class Runner():
 
   def plot_tamsd(self):
     display = self.config['tamsd']['display']
-    self.figure_tamsd,self.joint_figure_tamsd = sp.plot_tamsd(self.results_tamsd,display,self.delta_t,self.config['tamsd']['len_tamsd'])
+    methods_plotted = self.config['tamsd']['plot']
+    self.figure_tamsd,self.joint_figure_tamsd = sp.plot_tamsd(self.results_tamsd,display,self.delta_t,self.config['tamsd']['len_tamsd'],methods_plotted)
 
   def select_mask_on_data(self):
     H, xedges, yedges = np.histogram2d(self.data.x.to_numpy(), self.data.y.to_numpy(),bins=100)
     fig = plt.figure(figsize=(5, 5))
-    ax = fig.add_subplot(title='Data smoothed')
+    ax = fig.add_subplot(title='Select your data')
     plt.imshow(H, interpolation='none', origin='lower',
             extent=[xedges[0], xedges[-1], yedges[0], yedges[-1]])
     def onselect(eclick, erelease):

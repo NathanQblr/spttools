@@ -1,7 +1,7 @@
 
 data:
   columns : 0 #['x','y','traj','f'] # minimum is ['x','y','traj','f'], it's the header of your data if 0 the header is in your data
-  path_data : 'dat/test_simu.csv' #'dat/SPT:RPB1_ABC4M_format5.txt' # path of the csv containing the data (without header)
+  path_data : 'dat/test_simu.csv' # 'dat/SPT:RPB1_ABC4M_format5.txt' # path of the csv containing the data (without header)
   path_res_folder : 'res'
   delta_t : 0.01 # acquisition period in second (10 ms)
   pxsize : 1 #0.065 # pixel size in micrometer (65 nm)
@@ -18,8 +18,8 @@ tamsd:
   do : 1 #0 or 1 if we do the method
   len_tamsd : 7 #number of points of tamsd calculated
   nmin : 10 # minimal number of points per trajectory
-  methods: [0,1,2,3] #list of fittings methods
-  plot : [1] #list of 0 or 1 to plot or not the fitting
+  methods: [1,2] #list of fittings methods
+  plot : [1,2] #list of 0 or 1 to plot or not the fitting
   display : 1
 
 mapD:
