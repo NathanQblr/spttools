@@ -4,8 +4,8 @@ import pandas as pd
 import numpy as np
 
 
-NAME_FOLDER = '/Users/nathanquiblier/Downloads/new analyse rpb1 Dmax 2µm2s OK nov 2020'
-NAME_F = '../dat/SPT:RPB1_ABC4M_format'
+NAME_FOLDER = '/Users/nathanquiblier/Downloads/Noyaux complet pour Nathan'
+NAME_F = '../dat/SPT:RPB1_ABC4M_nucleus'
 
 dirlist = os.listdir(NAME_FOLDER)
 

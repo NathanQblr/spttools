@@ -1,15 +1,15 @@
 
 data:
   columns : 0 #['x','y','traj','f'] # minimum is ['x','y','traj','f'], it's the header of your data if 0 the header is in your data
-  path_data : 'dat/test_simu.csv' # 'dat/SPT:RPB1_ABC4M_format5.txt' # path of the csv containing the data (without header)
+  path_data :  'dat/SPT:RPB1_ABC4M_nucleus1.txt'  #'dat/test_simu.csv' # path of the csv containing the data (without header)
   path_res_folder : 'res'
   delta_t : 0.01 # acquisition period in second (10 ms)
-  pxsize : 1 #0.065 # pixel size in micrometer (65 nm)
+  pxsize : 0.065 # pixel size in micrometer (65 nm)
   sigma_noise : 0.06 #localization noise (verif  var ou std)=> std a priori
   d : 2 #dimension of diffusion
 
 mask:
-  is : 0 # 0 if all datas are kept 1 if we reject data
+  is : 1 # 0 if all datas are kept 1 if we reject data
   type : ellipse #ellipse or rectangle
   ntraj : 5 #minimal number of traj for analysis
 

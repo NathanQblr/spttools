@@ -12,7 +12,6 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 from sklearn.cluster import KMeans
 from scipy.spatial import Voronoi, voronoi_plot_2d
-import pandas as pd
 
 
 
@@ -95,7 +94,7 @@ def compute_difft_diffr2_in_df(points,delta_t):
         points.loc[points[points.traj == traj].index[:-1], 'dr2'] = diffr2
     return points[mask].reset_index(drop=True)
 
-def create_Voronoi(points, number_points_in_cluster):
+def create_voronoi(points, number_points_in_cluster):
     '''treat each position as an indepedent point and kmeans them to get their Voronoi diagram
     of cluster in total'''
     tot_number_points = points.shape[0]
@@ -114,14 +113,14 @@ def create_Voronoi(points, number_points_in_cluster):
     vor = Voronoi(centers)
     return points, vor
 
-def compute_D_by_cl(points, sigma_noise):
+def compute_coeffdiff_by_cl(points, sigma_noise):
     '''compute an estimation of the diffusion coefficient D in each cluster by averaging the distance beetween 2 steps'''
     nclust = max(points.cl)
     #print("Nclust =",nclust)
     clnums = np.unique(points.cl)
     # container for the estimated D in each cluster
-    D_by_clust = np.zeros((nclust + 1))
-    Jumps_by_clust = np.zeros((nclust + 1))
+    coefdiff_by_clust = np.zeros((nclust + 1))
+    jumps_by_clust = np.zeros((nclust + 1))
     # ResD[i,0]= #points of cluster i
     # ResD[i,1]= #DMAP of cluster i
     # cluster by cluster
@@ -129,14 +128,26 @@ def compute_D_by_cl(points, sigma_noise):
         # retrieve the points of cluster clus
         currpoints = points[points.cl == clus]
         # computes the maximum a posteriori of cluster clus
-        D_by_clust[clus] = np.sum(np.divide(currpoints.dr2, currpoints.dt)) / (4 * currpoints.shape[0])
-        D_by_clust[clus] -= sigma_noise**2 / currpoints.shape[0] * np.sum(np.divide(1, currpoints.dt))
-        points.loc[points.cl == clus, 'D'] = D_by_clust[clus]
+        coefdiff_by_clust[clus] = np.sum(np.divide(currpoints.dr2, currpoints.dt)) / (4 * currpoints.shape[0])
+        coefdiff_by_clust[clus] -= sigma_noise**2 / currpoints.shape[0] * np.sum(np.divide(1, currpoints.dt))
+        points.loc[points.cl == clus, 'D'] = coefdiff_by_clust[clus]
         # save for inspection of dependence of cluster size
-        # Jumps_by_clust=currpoints.shape[0]
+        jumps_by_clust=currpoints.shape[0]
     return points
 
-def call_map_D(points,min_number_per_traj,npoints_per_clus,sigma_noise,delta_t):
+def call_map_coefdiff(points,min_number_per_traj,npoints_per_clus,sigma_noise,delta_t):
+    """Call every function to create a voronoi map of diffusion coefficient on points data
+
+    Args:
+        points (pd.DataFrame): data for analysis
+        min_number_per_traj (int): minimimal number necessary to keep a trajectory for analysis
+        npoints_per_clus (int): number of points in each voronoi cell
+        sigma_noise (float): localisation noise
+        delta_t (float): time beetween 2 frames
+
+    Returns:
+        points,vor: results opf mapd D and voronoi diagram
+    """
     trajnums = np.unique(points.traj)
     print("Nombre traj data=",trajnums.size)
     print('computing the Voronoi meshes')
@@ -149,13 +160,23 @@ def call_map_D(points,min_number_per_traj,npoints_per_clus,sigma_noise,delta_t):
     print("Nombre traj after tri=",trajnums.size)
     #============= Voronoi meshing of the positions =================#
     print("Voronoi meshing of the positions")
-    points, vor = create_Voronoi(points,npoints_per_clus)
+    points, vor = create_voronoi(points,npoints_per_clus)
     print('Infering the diffusion coeficient of each cluster')
     #============= compute the maximum likelyhood in each cluster =================#
-    points = compute_D_by_cl(points,sigma_noise)
+    points = compute_coeffdiff_by_cl(points,sigma_noise)
     return points,vor
 
-def plot_mapD(points,voronoi,display):
+def plot_mapcoefdiff(points,voronoi,display):
+    """Plot results of methods of estimation of diffusion coefficient map
+
+    Args:
+        points (pd.DataFrame): data for analysis
+        voronoi (_type_): voronoi result of the map
+        display (0 1): boolean is we display plot or not
+
+    Returns:
+        matplotlib.figure: plot
+    """
     fig,ax=plt.subplots(3,1)
     # 1. plots the trajectory points colorcoded by their cluster id
     # and their voronoi clustering
@@ -174,12 +195,12 @@ def plot_mapD(points,voronoi,display):
     ax[0].set_title(r'map of the clusters and Voronoid meshing')
 
     #2. plots the trajectory points colorcoded by their D valur
-    mycmap=cm.plasma#cool.reversed()
+    mycmap = cm.plasma#cool.reversed()
     #definzes the colorscale
     # find min/max values for normalization
-    MINIMA = 0
-    MAXIMA = 50
-    norm = mpl.colors.Normalize(vmin=MINIMA, vmax=MAXIMA, clip=False)
+    min_coeffdiff = 0
+    max_coeffdiff = 50
+    norm = mpl.colors.Normalize(vmin=min_coeffdiff, vmax=max_coeffdiff, clip=False)
     mapper = cm.ScalarMappable(norm=norm, cmap=mycmap)
 
     ax[1].set_aspect(1)
@@ -195,14 +216,14 @@ def plot_mapD(points,voronoi,display):
     cbar.set_label(r'Estimated D $(\mu \mathrm{m}^2/\mathrm{s})$')#, rotation=270)
 
     #5. plot the distribution of D from the map
-    unique_Ds=np.unique(points.D)
-    counts, bins = np.histogram(unique_Ds[:-1],bins=50)
+    unique_coefdiff=np.unique(points.D)
+    counts, bins = np.histogram(unique_coefdiff[:-1],bins=50)
     ax[2].stairs(counts, bins,fill=True)
     #ax[2].set_xticks(np.arange(0,55,5))
     ax[2].grid(True,linestyle='--', linewidth=0.3)
     ax[2].set_xlabel(r'Est. D from the spatial maps $(\mu \mathrm{m}^2/\mathrm{s})$')
     ax[2].set_ylabel('# of clusters')
-    ax[2].set_title(f'est. D = {np.mean(unique_Ds):3.3}+/-{np.std(unique_Ds):3.3}')
+    ax[2].set_title(f'est. D = {np.mean(unique_coefdiff):3.3}+/-{np.std(unique_coefdiff):3.3}')
     ax[2].set_ylabel('# of clusters')
 
     if display:
