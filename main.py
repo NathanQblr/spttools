@@ -55,7 +55,7 @@ class Runner():
         if columns == 0 :
             self.data = pd.read_csv(self.path_data, header = 0)#.iloc[:10000,:]
         else:
-            self.data = pd.read_csv(self.path_data, columns)#.iloc[:10000,:]
+            self.data = pd.read_csv(self.path_data, names = columns)#.iloc[:10000,:]
         self.data.x *= self.pix_size
         self.data.y *= self.pix_size
         self.data = self.data.astype({"f": int, "traj": int})
@@ -199,10 +199,10 @@ def main() :
 
     if len(sys.argv) == 1:
         print("Config by default")
-        path = 'config_def.yaml'
+        path = 'conf/'+'config_def.yaml'
     else :
         arg=parser.parse_args()
-        path = arg.config_path
+        path = 'conf/'+arg.config_path
     return Runner(path).run()
 
 

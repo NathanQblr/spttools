@@ -13,7 +13,11 @@ dependencies = [
   'numpy',
   'pandas',
   'scipy',
-  'ptu'
+  'sklearn',
+  'ptu',
+  'matplotlib',
+  'seaborn',
+  'yaml'
 ]
 authors = [
   {name = 'Nathan Quiblier', email = 'nathan.quiblier@inria.fr' }
@@ -29,7 +33,7 @@ dynamic = ['version']
 
 [project.urls]
 Source = 'https://gitlab.inria.fr/nquilbie/sptoolbox'
-Documentation = 'https://jrye.gitlabpages.inria.fr/hydronaut/'
+Documentation = 'https://gitlab.inria.fr/nquilbie/sptoolbox'
 
 # Set the version from Git.
 [tool.hatch.version]
@@ -40,7 +44,7 @@ version_scheme = 'no-guess-dev'
 local_scheme = 'no-local-version'
 
 [tool.hatch.build.hooks.vcs]
-version-file = 'src/hydronaut/version.py'
+version-file = 'src/sptools/version.py'
 template = """\
 #!/usr/bin/env python3
 '''
