@@ -1,4 +1,5 @@
 """Main of my SPT data analyser module"""
+import os, argparse,sys
 import yaml
 import pandas as pd
 import numpy as np
@@ -24,27 +25,27 @@ class Runner():
 
         with open(config_path, 'r', encoding="utf-8") as file:
             self.config = yaml.safe_load(file)
-            self.delta_t = self.config['data']['delta_t']
-            self.sigma_noise = self.config['data']['sigma_noise']
-            self.dimension = self.config['data']['d']
-            self.pix_size = self.config['data']['pxsize']
+        self.delta_t = self.config['data']['delta_t']
+        self.sigma_noise = self.config['data']['sigma_noise']
+        self.dimension = self.config['data']['d']
+        self.pix_size = self.config['data']['pxsize']
 
-            self.path_data = None
-            self.data = None
-            self.points = None
+        self.path_data = None
+        self.data = None
+        self.points = None
 
-            self.x_axis = None
-            self.y_axis = None
-            self.x_center = None
-            self.y_center = None
-            self.alpha = None
+        self.x_axis = None
+        self.y_axis = None
+        self.x_center = None
+        self.y_center = None
+        self.alpha = None
 
-            self.results_tamsd = None
-            self.results_mapd = None
-            self.voronoi = None
-            self.figure_mapd = None
-            self.figure_tamsd = None
-            self.joint_figure_tamsd = None
+        self.results_tamsd = None
+        self.results_mapd = None
+        self.voronoi = None
+        self.figure_mapd = None
+        self.figure_tamsd = None
+        self.joint_figure_tamsd = None
 
     def load_data(self):
         """Load SPT data from a csv and save it into data as DataFrame
@@ -184,10 +185,7 @@ class Runner():
 
 
 
-A = Runner('config_def.yaml')
-A.run()
-
-"""def main(*args) :
+def main() :
     '''
     Main function to run an experiment
     Args:
@@ -196,24 +194,17 @@ A.run()
     Returns:
         The value returned by calling the runner.
     '''
-    return Runner(*args)
+    parser=argparse.ArgumentParser(description="sample argument parser", conflict_handler='resolve')
+    parser.add_argument("config_path")
 
-
-def script_main() -> None:
-    '''
-    Hydra makes some assumptions about configuration paths based on how the main
-    function is called. This is a workaround for creating a script via
-    pyproject.toml. It will simply invoke main() with any passed command-line
-    arguments.
-    '''
-    cmd = (sys.executable, '-m', 'spttools.run', *sys.argv[1:])
-    try:
-        subprocess.run(cmd, check=True)
-    except subprocess.CalledProcessError as err:
-        sys.exit(err)
-    except KeyboardInterrupt:
-        pass
+    if len(sys.argv) == 1:
+        print("Config by default")
+        path = 'config_def.yaml'
+    else :
+        arg=parser.parse_args()
+        path = arg.config_path
+    return Runner(path).run()
 
 
 if __name__ == '__main__':
-    main()"""
+    main()
