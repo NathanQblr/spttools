@@ -3,7 +3,7 @@ title: README
 author: Nathan QUIBLIER
 ---
 
-![SPToolslogo](img/sptools_logo.svg)
+![SPTools logo](img/sptools_logo.png)
 
 # Synopsis
 SPTools is a framework to analyse microscopic single particle trajectories easily and fastly
