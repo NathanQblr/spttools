@@ -34,5 +34,5 @@ There are only two requirements for running an experiment with SPTools:
 A different configuration file can be specified by setting the `CONFIG` environment variable. The value of this variable will be interpreted as a subpath within the `conf` directory of the working directory.
 
 
-Once the configuration file have been created, the experiment can be run with `python3 main.py your_config` (see below).
+Once the configuration file have been created, the experiment can be run with `spt-run config.yaml` or 'spt-run' to use config by default in 'config_def.yaml'.
 
