@@ -19,7 +19,7 @@ cd sptoolbox
 # Uncomment the following 2 lines to create and activate a virtual environment.
 # python -m venv venv
 # source venv/bin/activate
-pip install --upgrade .
+python -m pip install .
 ~~~
 
 

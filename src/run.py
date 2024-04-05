@@ -1,5 +1,7 @@
-"""Main of my SPT data analyser module"""
-import os, argparse,sys
+"""Runner of my SPT data analyser module"""
+import  argparse
+import sys
+import subprocess
 import yaml
 import pandas as pd
 import numpy as np
@@ -8,8 +10,8 @@ import matplotlib.pyplot as plt
 import matplotlib.widgets as mwidgets
 
 
-import src.signal_processing_module as sp
-import src.map_module as mm
+import signal_processing_module as sp
+import map_module as mm
 
 class Runner():
     """Analysis runner
@@ -183,14 +185,10 @@ class Runner():
         if self.config['data']['path_res_folder'] is not None:
             self.save_results()
 
-
-
 def main() :
     '''
     Main function to run an experiment
-    Args:
-        *args, **kwargs:
-            Positional and keyword arguments
+
     Returns:
         The value returned by calling the runner.
     '''
@@ -204,6 +202,7 @@ def main() :
         arg=parser.parse_args()
         path = 'conf/'+arg.config_path
     return Runner(path).run()
+
 
 
 if __name__ == '__main__':

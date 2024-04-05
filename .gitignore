@@ -10,3 +10,5 @@ venvSPT
 *.csv
 /res
 *.ipynb
+sptools.egg-info/
+build/

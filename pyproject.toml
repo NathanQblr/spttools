@@ -2,13 +2,12 @@
 # https://packaging.python.org/en/latest/tutorials/packaging-projects/
 
 [build-system]
-requires = ['hatchling', 'hatch-vcs', 'wheel']
-build-backend = 'hatchling.build'
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
 
 [project]
-name = 'mlfcs'
+name = 'sptools'
 description = 'A library for analysing SPT data to do molecular dynamic estimations (estimation of diffusion coefficient,anomalous exponent,...).'
-license = {file = 'LICENSE.txt'}
 dependencies = [
   'numpy',
   'pandas',
@@ -17,7 +16,7 @@ dependencies = [
   'ptu',
   'matplotlib',
   'seaborn',
-  'yaml'
+  'pyyaml'
 ]
 authors = [
   {name = 'Nathan Quiblier', email = 'nathan.quiblier@inria.fr' }
@@ -34,6 +33,9 @@ dynamic = ['version']
 [project.urls]
 Source = 'https://gitlab.inria.fr/nquilbie/sptoolbox'
 Documentation = 'https://gitlab.inria.fr/nquilbie/sptoolbox'
+
+[project.scripts]
+spt-run = 'run:main'
 
 # Set the version from Git.
 [tool.hatch.version]
