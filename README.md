@@ -14,11 +14,12 @@ SPTools is a framework to analyse microscopic single particle trajectories easil
 SPTools will be uploaded to the [Python Package Index](https://pypi.org/) once it is officially published. In the meantime, it can be installed from source with any standard Python package manager that supports [pyproject.toml](pyproject.toml) files. For example, to install it with pip, either locally or in a virtual environment, run the following commands:
 
 ~~~sh
-git clone https://gitlab.inria.fr/nquilbie/sptoolbox
+git clone https://gitlab.inria.fr/nquilbie/spttools
 cd sptoolbox
 # Uncomment the following 2 lines to create and activate a virtual environment.
-# python -m venv venv
-# source venv/bin/activate
+# python -m venv
+# source venv/bin/activate (if Linux Mac)
+# source venv/Scripts/activate (if windows)
 python -m pip install .
 ~~~
 

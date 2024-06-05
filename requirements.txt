@@ -3,7 +3,7 @@ pandas
 scipy
 pyptu
 yaml
-sklearn
+scikit-learn
 pyptu
 matplotlib
 seaborn

@@ -1,7 +1,7 @@
 
 data:
   columns : 0 # it's the header of your data , minimum is ['x','y','traj','f'],  if 0 the header is in your data
-  path_data :  'dat/SPT:RPB1_ABC4M_nucleus1.txt'  #'dat/test_simu.csv' # path of the csv containing the data (without header)
+  path_data :  'dat/testbeads.csv' #'dat/SPT:RPB1_ABC4M_nucleus1.txt'  #'dat/test_simu.csv' # path of the csv containing the data (without header)
   path_res_folder : 'res'
   delta_t : 0.01 # acquisition period in second (10 ms)
   pxsize : 0.065 # pixel size in micrometer (65 nm)
