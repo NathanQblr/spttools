@@ -55,9 +55,9 @@ class Runner():
         self.path_data = self.config['data']['path_data']
         columns = self.config['data']['columns']
         if columns == 0 :
-            self.data = pd.read_csv(self.path_data, header = 0)#.iloc[:10000,:]
+            self.data = pd.read_csv(self.path_data, header = 0)
         else:
-            self.data = pd.read_csv(self.path_data, names = columns)#.iloc[:10000,:]
+            self.data = pd.read_csv(self.path_data, names = columns)
         self.data.x *= self.pix_size
         self.data.y *= self.pix_size
         self.data = self.data.astype({"f": int, "traj": int})
@@ -153,7 +153,7 @@ class Runner():
                     print("Get rid of trajectories that are not inside the rectangle")
                     form = mm.inside_rectangle
                 self.points = mm.drop_traj_outside_form_in_df(self.data,self.x_center,self.y_center,self.x_axis,self.y_axis,self.alpha,form)
-                print("Nuber of trajectories : ",np.unique(self.points.traj).size)
+                print("Number of trajectories : ",np.unique(self.points.traj).size)
         else:
             self.points = self.data[['x', 'y','traj','f']]
             self.points = self.points.assign(dr2=0,cl=0,D=0,dt=0) #squared norm between positions, cluster label of point,diff coefficience of point,time difference between positions
@@ -162,11 +162,13 @@ class Runner():
         """Save results in the directory chosen in the confiuration file
         """
         path = self.config['data']['path_res_folder']
-        self.results_tamsd.to_csv(path+'/results_tamsd.csv')
-        self.results_mapd.to_csv(path+'/results_mapd.csv')
-        self.figure_mapd.savefig(path+'/fig_mapd.pdf')
-        self.figure_tamsd.savefig(path+'/fig_tamsd.pdf')
-        self.joint_figure_tamsd.savefig(path+'/joint_fig_tamsd.pdf')
+        if self.config['tamsd']['do']:
+            self.results_tamsd.to_csv(path+'/results_tamsd.csv')
+            self.figure_tamsd.savefig(path+'/fig_tamsd.pdf')
+            self.joint_figure_tamsd.savefig(path+'/joint_fig_tamsd.pdf')
+        if self.config['mapD']['do']:
+            self.results_mapd.to_csv(path+'/results_mapd.csv')
+            self.figure_mapd.savefig(path+'/fig_mapd.pdf')
 
     def run(self):
         """Run all analysis defined in config file
@@ -176,12 +178,12 @@ class Runner():
 
         if self.config['tamsd']['do']:
             self.results_tamsd = self.run_tamsd()
-        if self.config['tamsd']['plot']:
-            self.plot_tamsd() #Pb de plot
+            if self.config['tamsd']['plot']:
+                self.plot_tamsd() #Pb de plot
         if self.config['mapD']['do']:
             self. results_mapd, self.voronoi = self.run_mapd()
-        if self.config['mapD']['plot']:
-            self.plot_map_diffusion()
+            if self.config['mapD']['plot']:
+                self.plot_map_diffusion()
         if self.config['data']['path_res_folder'] is not None:
             self.save_results()
 
@@ -203,6 +205,17 @@ def main() :
         path = 'conf/'+arg.config_path
     return Runner(path).run()
 
+def script_main() -> None:
+    '''
+     This is a workaround for creating a script via
+    pyproject.toml. It will simply invoke main() with any passed command-line
+    arguments.
+    '''
+    cmd = (sys.executable, '-m', 'src.run', *sys.argv[1:])
+    try:
+        subprocess.run(cmd, check=True)
+    except subprocess.CalledProcessError as err:
+        sys.exit(err)
 
 
 if __name__ == '__main__':
